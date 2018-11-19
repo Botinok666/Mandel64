@@ -22,6 +22,6 @@ namespace Mandel
             Application.Run(new Form1());
         }
         [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern Boolean SetProcessDPIAware();
+        private static extern bool SetProcessDPIAware();
     }
 }

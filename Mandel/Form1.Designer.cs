@@ -77,11 +77,11 @@
             // fileMenu
             // 
             this.fileMenu.Location = new System.Drawing.Point(9, 21);
-            this.fileMenu.Margin = new System.Windows.Forms.Padding(2);
+            this.fileMenu.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.fileMenu.Name = "fileMenu";
             this.fileMenu.Size = new System.Drawing.Size(76, 48);
             this.fileMenu.TabIndex = 1;
-            this.fileMenu.Text = "File\r\nmenu";
+            this.fileMenu.Text = "Cancel";
             this.fileMenu.UseVisualStyleBackColor = true;
             this.fileMenu.Click += new System.EventHandler(this.fileMenu_Click);
             // 
@@ -157,7 +157,6 @@
             this.label1.Size = new System.Drawing.Size(65, 17);
             this.label1.TabIndex = 4;
             this.label1.Text = "Scale: 1x";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // pictureBox1
             // 
@@ -185,6 +184,7 @@
             // 
             // timer1
             // 
+            this.timer1.Enabled = true;
             this.timer1.Interval = 333;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
@@ -195,7 +195,7 @@
             this.ClientSize = new System.Drawing.Size(782, 555);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox1);
-            this.MinimumSize = new System.Drawing.Size(798, 594);
+            this.MinimumSize = new System.Drawing.Size(797, 589);
             this.Name = "Form1";
             this.Text = "Mandelbrot set generator";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
