@@ -53,7 +53,7 @@ namespace Mandel
                 sp.size.Width = (int)Convert.ToUInt32(sfWidth.Text);
                 sfWidth.ForeColor = (sp.size.Width > 781 ? SystemColors.ControlText : Color.Firebrick);
                 if (sp.size.Width > 781)
-                    (Owner as Form1).saveFrameChanged(sp.size, DialogResult.Yes);
+                    (Owner as Main).SaveFrameChanged(sp.size, DialogResult.Yes);
             }
             catch (FormatException)
             {
@@ -68,7 +68,7 @@ namespace Mandel
                 sp.size.Height = (int)Convert.ToUInt32(pwHeight.Text);
                 pwHeight.ForeColor = (sp.size.Height > 479 ? SystemColors.ControlText : Color.Firebrick);
                 if (sp.size.Height > 479)
-                    (Owner as Form1).saveFrameChanged(sp.size, DialogResult.Yes);
+                    (Owner as Main).SaveFrameChanged(sp.size, DialogResult.Yes);
             }
             catch (FormatException)
             {
@@ -82,7 +82,7 @@ namespace Mandel
 
         private void button1_Click(object sender, EventArgs e)
         {
-            (Owner as Form1).saveFrameChanged(new Size(0, 0), DialogResult.Cancel);
+            (Owner as Main).SaveFrameChanged(new Size(0, 0), DialogResult.Cancel);
             Close();
         }
 
@@ -99,7 +99,7 @@ namespace Mandel
                     {
                         sp.guid = saveFormat[saveFileDialog.FilterIndex - 1];
                         sp.filename = saveFileDialog.FileName;
-                        (Owner as Form1).PictureSaveAsync(sp);
+                        (Owner as Main).PictureSaveAsync(sp);
                     }
                 }
                 Close();
@@ -112,7 +112,7 @@ namespace Mandel
             float ph = (float)pageSize.Rows[comboBox1.SelectedIndex]["Height"] * (float)numericUpDown3.Value;
             label8.Text = string.Format("Overall size: {0:F2}*{1:F2}m", pw * 2.54e-2f, ph * 2.54e-2f);
             float dpi = (float)pageDPI.Rows[comboBox2.SelectedIndex]["DPI"];
-            (Owner as Form1).saveFrameChanged(new Size((int)(pw * dpi), (int)(ph * dpi)), DialogResult.Yes);
+            (Owner as Main).SaveFrameChanged(new Size((int)(pw * dpi), (int)(ph * dpi)), DialogResult.Yes);
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -144,11 +144,11 @@ namespace Mandel
                 {
                     sp.guid = saveFormat[saveFileDialog.FilterIndex - 1];
                     sp.filename = saveFileDialog.FileName;
-                    (Owner as Form1).saveFrameChanged(new Size(0, 0), DialogResult.OK);
-                    (Owner as Form1).PictureSaveAsync(sp);
+                    (Owner as Main).SaveFrameChanged(new Size(0, 0), DialogResult.OK);
+                    (Owner as Main).PictureSaveAsync(sp);
                 }
                 else
-                    (Owner as Form1).saveFrameChanged(new Size(0, 0), DialogResult.Cancel);
+                    (Owner as Main).SaveFrameChanged(new Size(0, 0), DialogResult.Cancel);
                 Close();
             }
         }

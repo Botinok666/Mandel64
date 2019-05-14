@@ -2,40 +2,39 @@
 
 extern "C"
 {
-	//int CalculateMandel64_FPU(float arr[], double re, double im, double step,
-	//	int iterations, int mode, int height, int xPixel)
-	//{
-	//	register double reZ, imZ, re2, im2, imC;
-	//	register double Bailout = (1 << 16), reC = step * xPixel + re;
-	//	int iterIdx;
-	//	for (int yPixel = 0; yPixel < height; yPixel++)
-	//	{
-	//		if ((mode & (1 << 30)) != 0 && arr[yPixel] != 0) //Update
-	//			continue;
-	//		imC = im - step * yPixel;
-	//		if ((mode & (1 << 29)) != 0) //HRAA, Re component should look like sawtooth: 0, 1, 0, 1...
-	//			reC = re + step * ((xPixel << 1) + (yPixel & 1));
-	//		reZ = imZ = re2 = im2 = 0;
-	//		for (iterIdx = 0; iterIdx < iterations; iterIdx++)
-	//		{
-	//			imZ += imZ; //imZ = 2 * imZ
-	//			imZ *= reZ; //imZ = 2 * imZ * reZ
-	//			imZ += imC; //imZ = 2 * imZ * reZ + imC
-	//			reZ = re2 - im2; //reZ = reZ^2 - imZ^2
-	//			reZ += reC; //reZ = reZ^2 - imZ^2 + reC
-	//			re2 = reZ * reZ; //reZ^2 = reZ * reZ
-	//			im2 = imZ * imZ; //imZ^2 = imZ * imZ
-	//			if (re2 + im2 > Bailout)
-	//			{
-	//				arr[yPixel] = (float)(iterIdx + 1 - log2(log2(re2 + im2) / 2.0));
-	//				break;
-	//			}
-	//		}
-	//		if (iterIdx == iterations)
-	//			arr[yPixel] = (float)iterations;
-	//	}
-	//	return 0;
-	//}
+	__declspec(dllexport) void Mandel64_FPU(float arr[], double re, double im, double step,
+		int iterations, int mode, int height, int xPixel)
+	{
+		register double reZ, imZ, re2, im2, imC;
+		register double Bailout = (1 << 16), reC = step * xPixel + re;
+		int iterIdx;
+		for (int yPixel = 0; yPixel < height; yPixel++)
+		{
+			if ((mode & (1 << 30)) != 0 && arr[yPixel] != 0) //Update
+				continue;
+			imC = im - step * yPixel;
+			if ((mode & (1 << 29)) != 0) //HRAA, Re component should look like sawtooth: 0, 1, 0, 1...
+				reC = re + step * ((xPixel << 1) + (yPixel & 1));
+			reZ = imZ = re2 = im2 = 0;
+			for (iterIdx = 0; iterIdx < iterations; iterIdx++)
+			{
+				imZ += imZ; //imZ = 2 * imZ
+				imZ *= reZ; //imZ = 2 * imZ * reZ
+				imZ += imC; //imZ = 2 * imZ * reZ + imC
+				reZ = re2 - im2; //reZ = reZ^2 - imZ^2
+				reZ += reC; //reZ = reZ^2 - imZ^2 + reC
+				re2 = reZ * reZ; //reZ^2 = reZ * reZ
+				im2 = imZ * imZ; //imZ^2 = imZ * imZ
+				if (re2 + im2 > Bailout)
+				{
+					arr[yPixel] = (float)(iterIdx + 1 - log2(log2(re2 + im2) / 2.0));
+					break;
+				}
+			}
+			if (iterIdx == iterations)
+				arr[yPixel] = (float)iterations;
+		}
+	}
 
 	__declspec(dllexport) void Mandel64_SSE2(float arr[], double re, double im, double step,
 		int iterations, int mode, int height, int xPixel)

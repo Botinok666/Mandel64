@@ -1,6 +1,6 @@
 ﻿namespace Mandel
 {
-    partial class Form1
+    partial class Main
     {
         /// <summary>
         /// Required designer variable.
@@ -83,7 +83,7 @@
             this.fileMenu.TabIndex = 1;
             this.fileMenu.Text = "Cancel";
             this.fileMenu.UseVisualStyleBackColor = true;
-            this.fileMenu.Click += new System.EventHandler(this.fileMenu_Click);
+            this.fileMenu.Click += new System.EventHandler(this.FileMenu_Click);
             // 
             // pictureBox2
             // 
@@ -92,7 +92,7 @@
             this.pictureBox2.Size = new System.Drawing.Size(210, 30);
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
-            this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox2_Paint);
+            this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox2_Paint);
             this.pictureBox2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseClick);
             this.pictureBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseDown);
             this.pictureBox2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox2_MouseMove);
@@ -166,7 +166,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(782, 480);
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1_Paint);
             this.pictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseDown);
             this.pictureBox1.MouseHover += new System.EventHandler(this.pictureBox1_MouseHover);
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
@@ -186,7 +186,7 @@
             // 
             this.timer1.Enabled = true;
             this.timer1.Interval = 333;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.timer1.Tick += new System.EventHandler(this.Timer1_Tick);
             // 
             // Form1
             // 

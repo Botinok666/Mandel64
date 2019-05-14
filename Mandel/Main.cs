@@ -14,7 +14,7 @@ using System.Diagnostics;
 
 namespace Mandel
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         Bitmap filled_gradient = new Bitmap(200, 1), g_arrow = new Bitmap(5, 20);
         Bitmap image = new Bitmap(64, 48);
@@ -28,8 +28,9 @@ namespace Mandel
         Point mouse_down = new Point(-1, 0), mouse_move = new Point(-1, 0), lr = new Point(0, 0);
         Point shiftGrad = new Point(0, 0);
         RectangleF saveFrame = new RectangleF(0, 0, 0, 0);
-
-        ContextMenu pbox = new ContextMenu(), gbox = new ContextMenu(), fileopts = new ContextMenu();
+        private readonly ContextMenu pbox = new ContextMenu();
+        private readonly ContextMenu gbox = new ContextMenu();
+        private readonly ContextMenu fileopts = new ContextMenu();
         MenuItem[] aaMenu = new MenuItem[] { new MenuItem("None"), new MenuItem("2xHRAA"), new MenuItem("4xSSAA") },
             renderMenu = new MenuItem[] { new MenuItem("Weighted"), new MenuItem("Logarithmic") },
             pboxMenu = new MenuItem[] { new MenuItem("Set standard scale"), new MenuItem("Show coordinates"),
@@ -37,13 +38,12 @@ namespace Mandel
             gboxMenu = new MenuItem[] { new MenuItem("Change color"), new MenuItem("Delete") },
             fileoptsMenu = new MenuItem[] { new MenuItem("Open coordinates file"),
                 new MenuItem("Save coordinates file"), new MenuItem("Save picture") };
-        List<string> binList = new List<string>();
-        ColorDialog choosecolor = new ColorDialog();
-        ToolTip coordinates = new ToolTip();
+        readonly ColorDialog choosecolor = new ColorDialog();
+        readonly ToolTip coordinates = new ToolTip();
         SaveParams saveParams = new SaveParams() { tileX = 1, tileY = 1 };
-        Stopwatch wtime = new Stopwatch();
+        readonly Stopwatch wtime = new Stopwatch();
         const float settingsVersion = 1.05f;
-        string[] extensionList = new string[] { "FPU", "SSE2", "AVX" };
+        readonly string[] extensionList = new string[] { "FPU", "SSE2", "AVX" };
 
         Action _cancelWork = null;
         int _progress = 0;
@@ -76,6 +76,8 @@ namespace Mandel
         Brush arrowBrush;
         Pen arrowPen = new Pen(Color.Orchid);
 
+        public List<string> BinList { get; set; } = new List<string>();
+
         [DllImport("MandelCore64.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetLatestSupportedExtension();
         [DllImport("MandelCore64.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -85,7 +87,7 @@ namespace Mandel
         public static extern void Mandel64_AVX(ref float Arr, double Re, double Im,
             double Step, int Iterations, int Mode, int Height, int xPixel);
 
-        public Form1()
+        public Main()
         {
             InitializeComponent();
             Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.BelowNormal;
@@ -289,7 +291,7 @@ namespace Mandel
             //Difference between coordinates exponent and step exponent
             int ediff = (int)expMS - (int)Math.Log(Step, 2);
             //Since "Double" type contains 53 bits for mantissa, this is the maximum difference
-            label1.Text = "Double usage: " + ((ediff * 100) / 53f).ToString("F1") + "%";
+            label1.Text = "Double usage: " + (ediff * 100 / 53f).ToString("F1") + "%";
         }
         /// <summary>
         /// Starts recalculating given area
@@ -351,7 +353,7 @@ namespace Mandel
                     {
                         cts.Cancel();
                     };
-                    await GenerateMandelbrot(size, total_iterations, update, cts.Token);
+                    await GenerateMandelbrot(size, update, cts.Token);
                 }
                 catch (Exception ex)
                 {
@@ -474,7 +476,7 @@ namespace Mandel
         private PairGradient[] MakePalette()
         {
             int gwidth = filled_gradient.Width, i, j = 0, gradRM = pgrad_count - 1;
-            float lborder = pgrad[0].position * gwidth, pg = 1;
+            float lborder = pgrad[0].position * gwidth, pg;
             if (lborder > 0)
                 pg = 1f / ((1f - pgrad[gradRM].position + pgrad[0].position) * gwidth);
             else
@@ -514,7 +516,7 @@ namespace Mandel
         /// <param name="update">Only recalculate points with maximum iterations</param>
         /// <param name="token">Token that can cancel the task</param>
         /// <returns>Task that can be awaited</returns>
-        private Task GenerateMandelbrot(Size size, long totIters, bool update, CancellationToken token)
+        private Task GenerateMandelbrot(Size size, bool update, CancellationToken token)
         {
             // info on mandelbrot and fractals
             // https://classes.yale.edu/fractals/MandelSet/welcome.html
@@ -546,7 +548,7 @@ namespace Mandel
                 token.ThrowIfCancellationRequested();
             }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
-        private void timer1_Tick(object sender, EventArgs e)
+        private void Timer1_Tick(object sender, EventArgs e)
         {
             //All threads of Parallel.For incrementing this global variable
             progressBar1.Value = _progress; //Equals to currently calculated columns
@@ -722,7 +724,7 @@ namespace Mandel
         /// </summary>
         /// <param name="sender">Generic parameter</param>
         /// <param name="e">Generic parameter</param>
-        private void fileMenu_Click(object sender, EventArgs e)
+        private void FileMenu_Click(object sender, EventArgs e)
         {
             if (fileMenu.Text != "Cancel" && !IsFormOpen(typeof(PictureSave)))
                 fileopts.Show(fileMenu, new Point(0, 0));
@@ -758,7 +760,7 @@ namespace Mandel
             { textBox1.ForeColor = Color.Firebrick; }
         }
         #endregion TextProcessing
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
+        private void PictureBox1_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawImageUnscaled(image, lr);
             //Left button pressed down over picture box
@@ -784,7 +786,7 @@ namespace Mandel
         /// </summary>
         /// <param name="size">Size of image to be saved</param>
         /// <param name="result">Determines if user has closed the form with parameters or not</param>
-        public void saveFrameChanged(Size size, DialogResult result)
+        public void SaveFrameChanged(Size size, DialogResult result)
         {
             float pbs = pictureBox1.Width / (float)pictureBox1.Height;
             if (!size.IsEmpty)
@@ -1028,7 +1030,7 @@ namespace Mandel
             }
         }
         #endregion Main_picture_mouse_actions
-        private void pictureBox2_Paint(object sender, PaintEventArgs e)
+        private void PictureBox2_Paint(object sender, PaintEventArgs e)
         {
             int y, z, lborder = pictureBox2.Width / 42;
             for (y = 0; y < pictureBox2.Height >> 1; y++)
@@ -1389,7 +1391,7 @@ namespace Mandel
         private void SaveDialogOpen(object sender, EventArgs e)
         {
             PictureSave psDiag = new PictureSave();
-            saveParams.rawRequired = binList.Count > 0;
+            saveParams.rawRequired = BinList.Count > 0;
             psDiag.sp = saveParams;
             psDiag.Show(this);
         }
@@ -1440,7 +1442,7 @@ namespace Mandel
                 Rectangle bounds;
                 if (sp.tileX == 1 && sp.tileY == 1) //Single picture needs to be saved
                 {
-                    if (!binList.Count.Equals(1)) //No binary data was loaded
+                    if (!BinList.Count.Equals(1)) //No binary data was loaded
                     {
                         if (await RecalculateAsync(new Size(tileWidth, tileHeight), false, false, true))
                         {
@@ -1453,16 +1455,16 @@ namespace Mandel
                             if (sp.rawRequired)
                             {
                                 await BinaryFileSaveAsync(sp.filename, new byte[pixel_iterations.Length * sizeof(float)]);
-                                binList.Add(sp.filename);
+                                BinList.Add(sp.filename);
                             }
                         }
                     }
                     else //Save picture from binary data
                     {
                         SaveParams t = sp;
-                        await BinaryFileLoadAsync(binList[0], new byte[pixel_iterations.Length * sizeof(float)]);
+                        await BinaryFileLoadAsync(BinList[0], new byte[pixel_iterations.Length * sizeof(float)]);
                         FillBitmap(gHistogram, MakePalette(), pixelData);
-                        t.filename = Path.ChangeExtension(binList[0], Path.GetExtension(sp.filename));
+                        t.filename = Path.ChangeExtension(BinList[0], Path.GetExtension(sp.filename));
                         FileSave(t, true);
                     }
                 }
@@ -1473,7 +1475,7 @@ namespace Mandel
                     string shortName = Path.GetFileNameWithoutExtension(sp.filename);
                     string dirName = Path.Combine(Path.GetDirectoryName(sp.filename), shortName);
                     byte[] temp = null;
-                    if (binList.Count != sp.tileX * sp.tileY) //No valid binary data was found when the file was opened
+                    if (BinList.Count != sp.tileX * sp.tileY) //No valid binary data was found when the file was opened
                     {
                         Directory.CreateDirectory(dirName);
                         SaveParams x = sp;
@@ -1505,7 +1507,7 @@ namespace Mandel
                                 if (temp == null)
                                     temp = new byte[pixel_iterations.Length * sizeof(float)];
                                 await BinaryFileSaveAsync(fname, temp);
-                                binList.Add(fname);
+                                BinList.Add(fname);
                                 label7.Text += string.Format("Processed: {0}/{1}", i * sp.tileY + j + 1, sp.tileX * sp.tileY);
                             }
                     }
@@ -1535,14 +1537,14 @@ namespace Mandel
                         if (temp == null)
                             temp = new byte[pixel_iterations.Length * sizeof(float)];
                         //Load each binary file and save picture with the same name
-                        foreach (var file in binList)
+                        foreach (var file in BinList)
                         {
                             await BinaryFileLoadAsync(file, temp);
                             FillBitmap(histogram, gPalette, pixelData);
                             t.filename = Path.ChangeExtension(file, Path.GetExtension(sp.filename));
                             FileSave(t, true);
                         }
-                        MessageBox.Show(binList.Count.ToString() + " images saved", "Success", MessageBoxButtons.OK);
+                        MessageBox.Show(BinList.Count.ToString() + " images saved", "Success", MessageBoxButtons.OK);
                     }
                 }
                 re = oldRe; //Restore previous image coordinates
@@ -1678,7 +1680,7 @@ namespace Mandel
 
             FileStream fstream = null;
             bool piFilled = false;
-            binList.Clear();
+            BinList.Clear();
             gHistogram = null;
             //Calculating size in pixels with overlap
             int sWidth = pWidth + (int)(pWidth * saveParams.overlap);
@@ -1730,7 +1732,7 @@ namespace Mandel
                             //Force to make histogram of incoming data, so it'll be available anyway
                             MakeHistogram(0, bounds, ref htemp, false, true, true);
                             //Add name to list, so later we can create pictures from these binary files
-                            binList.Add(fname);
+                            BinList.Add(fname);
                         }
                     if (i == saveParams.tileX)
                     {
@@ -1795,7 +1797,7 @@ namespace Mandel
                 re -= step * (sWidth >> 1);
                 im += step * (sHeight >> 1);
                 prev_iterations = Convert.ToInt32(pixelIterations.Text);
-                int histBottom = prev_iterations;
+                //int histBottom = prev_iterations;
                 Rectangle bounds = new Rectangle(new Point(0, 0),
                     new Size(pixel_iterations.GetLength(0), pixel_iterations.GetLength(1)));
                 long[] htemp = null;
